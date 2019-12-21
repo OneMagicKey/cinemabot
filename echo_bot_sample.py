@@ -1,8 +1,10 @@
 import os
+import config
+# from telebot import apihelper
 import telebot
 
-
-bot = telebot.TeleBot(os.environ['1043723909:AAGsTVTyMS6lBwvZ2MUoxSKpCidb6XWeLSU'])
+# apihelper.proxy = {'https': 'socks5://154.221.21.197:10800'}
+bot = telebot.TeleBot(config.token)
 
 
 @bot.message_handler(commands=['start', 'help'])
