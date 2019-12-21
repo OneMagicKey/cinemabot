@@ -12,6 +12,11 @@ def send_welcome(message):
     bot.reply_to(message, "Hello, I'm simple echo bot. Tell me something!")
 
 
+@bot.message_handler(commands=['lalala'])
+def send_mes(message):
+    bot.reply_to(message, "Irinana")
+
+
 @bot.message_handler(func=lambda m: True)
 def echo_all(message):
     bot.reply_to(message, message.text)
