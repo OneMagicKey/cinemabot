@@ -1,3 +1,4 @@
+import asyncio
 import aiohttp
 from bs4 import BeautifulSoup
 
@@ -15,6 +16,11 @@ def start_command(message: types.Message):
 
 
 @bot.message_handler(func=lambda m: True)
+def foo(message: types.Message):
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(find_movie(message))
+
+
 async def find_movie(message: types.Message):
     from imdb import IMDb
     ia = IMDb()
