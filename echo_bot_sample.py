@@ -1,4 +1,3 @@
-import os
 import config
 from telebot import types
 # from telebot import apihelper
@@ -14,6 +13,7 @@ def start_command(message: types.Message):
     bot.send_message(user_id, "Welcome to cinema bot")
 
 
+@bot.message_handler(func=lambda m: True)
 def find_movie(message: types.Message):
     from imdb import IMDb
     ia = IMDb()
@@ -23,11 +23,6 @@ def find_movie(message: types.Message):
         bot.send_message(user_id, movie[0].get_current_info())
     else:
         bot.send_message(user_id, "Can't find" + message.text)
-
-
-@bot.message_handler(func=lambda m: True)
-def echo_all(message):
-    bot.reply_to(message, message.text)
 
 
 if __name__ == '__main__':
