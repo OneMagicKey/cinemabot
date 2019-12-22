@@ -74,7 +74,7 @@ async def find_watch_online_film(title: str, year: str):
     async with aiohttp.ClientSession() as session:
         for url, trunc_url in zip(rus_urls, trunc_rus_urls):
             params = {
-                'q': 'site:' + url + ' ' + title + ' ' + year + ' смотреть',
+                'q': 'site:' + url + ' ' + title + ' ' + str(year) + ' смотреть',
             }
             async with session.get(google, params=params, headers=header) as resp:
                 search_rsp = await resp.text()
