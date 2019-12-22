@@ -80,8 +80,7 @@ async def find_watch_online_film(title: str, year: str):
                 search_rsp = await resp.text()
                 soup = BeautifulSoup(search_rsp, 'lxml')
                 for link in soup.find_all('a'):
-                    if link.get('href') and link.get('href').startswith(trunc_url):
-                        print('hete')
+                    if link.get('href'): #and link.get('href').startswith(trunc_url)
                         movies_links.append(link.get('href'))
                         break
     return movies_links
