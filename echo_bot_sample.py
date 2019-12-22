@@ -33,8 +33,9 @@ def find_movie(message: types.Message):
         movie = Movie.objects.search(message.text)[0]
         if movie:
             movie.get_content('main_page')
-            bot.send_message(user_id, movie.title)
-            bot.send_photo(user_id, movie.get_content('posters'), movie.title)
+            movie.get_content('posters')
+            bot.send_message(user_id, movie.title + '\n' + movie.plot)
+            bot.send_photo(user_id, movie.posters[0], movie.title)
         else:
             bot.send_message(user_id, "Can't find " + message.text)
 
