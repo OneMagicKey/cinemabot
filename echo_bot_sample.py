@@ -21,7 +21,7 @@ def find_movie(message: types.Message):
     movie = ia.search_movie(title=message.text)
     if movie:
         bot.send_message(user_id, movie[0].summary())
-        bot.send_photo(user_id, movie[0]['full size cover url'], movie[0]['title'])
+        bot.send_photo(user_id, movie[0]['full-size cover url'], movie[0]['title'])
     else:
         bot.send_message(user_id, "Can't find " + message.text)
 
