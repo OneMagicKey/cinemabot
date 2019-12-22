@@ -31,7 +31,8 @@ def find_movie(message: types.Message):
         movies.sort(key=lambda mov: sum(mov.get('number of votes').values()), reverse=True)
         bot.send_message(user_id, movies[0].summary())
         bot.send_photo(user_id, movies[0]['full-size cover url'], movies[0]['title'])
-        links = find_watch_online_film(movies[0]['title'], movies[0]['year'])
+        loop = asyncio.get_event_loop()
+        links = loop.run_until_complete(find_watch_online_film(movies[0]['title'], movies[0]['year']))
         watch_text = ''
         for link in links:
             watch_text += link + '\n'
@@ -45,7 +46,8 @@ def find_movie(message: types.Message):
             movie.get_content('posters')
             bot.send_message(user_id, movie.title + '\n' + movie.plot)
             bot.send_photo(user_id, movie.posters[0], movie.title)
-            links = find_watch_online_film(movie.title, movie.year)
+            loop = asyncio.get_event_loop()
+            links = loop.run_until_complete(find_watch_online_film(movie.title, movie.year))
             watch_text = ''
             for link in links:
                 watch_text += link + '\n'
@@ -54,9 +56,7 @@ def find_movie(message: types.Message):
             bot.send_message(user_id, "Can't find " + message.text)
 
 
-def find_watch_online_film(title: str, year: str):
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
+async def find_watch_online_film(title: str, year: str):
     rus_urls = [
         'https://www.ivi.ru',
         'https://okko.tv',
@@ -71,13 +71,13 @@ def find_watch_online_film(title: str, year: str):
         )
     }
     movies_links = []
-    with aiohttp.ClientSession() as session:
+    async with aiohttp.ClientSession() as session:
         for url, trunc_url in zip(rus_urls, trunc_rus_urls):
             params = {
                 'q': 'site:' + url + ' ' + title + ' ' + year + ' смотреть',
             }
-            with session.get(google, params=params, headers=header) as resp:
-                search_rsp = resp.text()
+            async with session.get(google, params=params, headers=header) as resp:
+                search_rsp = await resp.text()
                 soup = BeautifulSoup(search_rsp, 'lxml')
                 for link in soup.find_all('a'):
                     if link.get('href') and link.get('href').startswith(trunc_url):
