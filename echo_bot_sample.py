@@ -21,7 +21,7 @@ def find_movie(message: types.Message):
     movies = []
     for movie in found_movies:
         ia.update(movie, info=['plot', 'vote details'])
-        if type(movie.get('number of votes')) != 'NoneType':
+        if movie.get('number of votes') is not None:
             movies.append(movie)
 
     if movies:
