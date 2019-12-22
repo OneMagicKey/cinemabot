@@ -1,4 +1,4 @@
-beautifulsoup==4-4.8.1
+beautifulsoup4==4.8.1
 certifi==2019.11.28
 Django==1.10.6
 docutils==0.13.1
