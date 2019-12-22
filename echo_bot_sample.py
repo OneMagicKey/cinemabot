@@ -44,7 +44,7 @@ def find_movie(message: types.Message):
             bot.send_message(user_id, "Can't find " + message.text)
 
 
-def find_watch_online_film(title: str, year: str):
+async def find_watch_online_film(title: str, year: str):
     rus_urls = [
         'https://www.ivi.ru',
         'https://okko.tv',
@@ -59,13 +59,13 @@ def find_watch_online_film(title: str, year: str):
         )
     }
     movies_links = []
-    with aiohttp.ClientSession() as session:
+    async with aiohttp.ClientSession() as session:
         for url, trunc_url in zip(rus_urls, trunc_rus_urls):
             params = {
                 'q': 'site:' + url + ' ' + title + ' ' + year + ' смотреть',
             }
-            with session.get(google, params=params, headers=header) as resp:
-                search_rsp = resp.text()
+            async with session.get(google, params=params, headers=header) as resp:
+                search_rsp = await resp.text()
                 soup = BeautifulSoup(search_rsp, 'lxml')
                 for link in soup.find_all('a'):
                     if link.get('href') and link.get('href').startswith(trunc_url):
