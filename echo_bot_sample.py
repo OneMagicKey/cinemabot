@@ -15,7 +15,7 @@ def start_command(message: types.Message):
 
 
 @bot.message_handler(func=lambda m: True)
-def find_movie(message: types.Message):
+async def find_movie(message: types.Message):
     from imdb import IMDb
     ia = IMDb()
     user_id = message.from_user.id
@@ -30,7 +30,12 @@ def find_movie(message: types.Message):
         movies.sort(key=lambda mov: sum(mov.get('number of votes').values()), reverse=True)
         bot.send_message(user_id, movies[0].summary())
         bot.send_photo(user_id, movies[0]['full-size cover url'], movies[0]['title'])
-        find_watch_online_film(movies[0]['title'], movies[0]['year'])
+        links = await find_watch_online_film(movies[0]['title'], movies[0]['year'])
+        watch_text = ''
+        for link in links:
+            watch_text += link + '\n'
+        bot.send_message(user_id, watch_text)
+
     else:
         from kinopoisk.movie import Movie
         movie = Movie.objects.search(message.text)[0]
@@ -39,7 +44,11 @@ def find_movie(message: types.Message):
             movie.get_content('posters')
             bot.send_message(user_id, movie.title + '\n' + movie.plot)
             bot.send_photo(user_id, movie.posters[0], movie.title)
-            find_watch_online_film(movie.title, movie.year)
+            links = await find_watch_online_film(movie.title, movie.year)
+            watch_text = ''
+            for link in links:
+                watch_text += link + '\n'
+            bot.send_message(user_id, watch_text)
         else:
             bot.send_message(user_id, "Can't find " + message.text)
 
