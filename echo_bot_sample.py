@@ -46,8 +46,9 @@ def find_movie(message: types.Message):
             movie.get_content('posters')
             bot.send_message(user_id, movie.title + '\n' + movie.plot)
             bot.send_photo(user_id, movie.posters[0], movie.title)
-            loop = asyncio.new_event_loop()
-            links = loop.run_until_complete(find_watch_online_film(movie.title, movie.year))
+            # loop = asyncio.new_event_loop()
+            # links = loop.run_until_complete(find_watch_online_film(movie.title, movie.year))
+            links = ['test']
             watch_text = ''
             for link in links:
                 watch_text += link + '\n'
