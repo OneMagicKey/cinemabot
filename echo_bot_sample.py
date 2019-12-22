@@ -29,7 +29,14 @@ def find_movie(message: types.Message):
         bot.send_message(user_id, movies[0].summary())
         bot.send_photo(user_id, movies[0]['full-size cover url'], movies[0]['title'])
     else:
-        bot.send_message(user_id, "Can't find " + message.text)
+        from kinopoisk.movie import Movie
+        movie = Movie.objects.search(message.text)[0]
+        if movie:
+            movie.get_content('main_page')
+            bot.send_message(user_id, movie.title)
+            bot.send_photo(user_id, movie.get_content('posters'), movie.title)
+        else:
+            bot.send_message(user_id, "Can't find " + message.text)
 
 
 if __name__ == '__main__':
