@@ -16,12 +16,7 @@ def start_command(message: types.Message):
 
 
 @bot.message_handler(func=lambda m: True)
-def foo(message: types.Message):
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(find_movie(message))
-
-
-async def find_movie(message: types.Message):
+def find_movie(message: types.Message):
     from imdb import IMDb
     ia = IMDb()
     user_id = message.from_user.id
@@ -36,7 +31,7 @@ async def find_movie(message: types.Message):
         movies.sort(key=lambda mov: sum(mov.get('number of votes').values()), reverse=True)
         bot.send_message(user_id, movies[0].summary())
         bot.send_photo(user_id, movies[0]['full-size cover url'], movies[0]['title'])
-        links = await find_watch_online_film(movies[0]['title'], movies[0]['year'])
+        links = find_watch_online_film(movies[0]['title'], movies[0]['year'])
         watch_text = ''
         for link in links:
             watch_text += link + '\n'
@@ -50,7 +45,7 @@ async def find_movie(message: types.Message):
             movie.get_content('posters')
             bot.send_message(user_id, movie.title + '\n' + movie.plot)
             bot.send_photo(user_id, movie.posters[0], movie.title)
-            links = await find_watch_online_film(movie.title, movie.year)
+            links = find_watch_online_film(movie.title, movie.year)
             watch_text = ''
             for link in links:
                 watch_text += link + '\n'
@@ -59,7 +54,9 @@ async def find_movie(message: types.Message):
             bot.send_message(user_id, "Can't find " + message.text)
 
 
-async def find_watch_online_film(title: str, year: str):
+def find_watch_online_film(title: str, year: str):
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
     rus_urls = [
         'https://www.ivi.ru',
         'https://okko.tv',
@@ -74,13 +71,13 @@ async def find_watch_online_film(title: str, year: str):
         )
     }
     movies_links = []
-    async with aiohttp.ClientSession() as session:
+    with aiohttp.ClientSession() as session:
         for url, trunc_url in zip(rus_urls, trunc_rus_urls):
             params = {
                 'q': 'site:' + url + ' ' + title + ' ' + year + ' смотреть',
             }
-            async with session.get(google, params=params, headers=header) as resp:
-                search_rsp = await resp.text()
+            with session.get(google, params=params, headers=header) as resp:
+                search_rsp = resp.text()
                 soup = BeautifulSoup(search_rsp, 'lxml')
                 for link in soup.find_all('a'):
                     if link.get('href') and link.get('href').startswith(trunc_url):
