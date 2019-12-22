@@ -20,8 +20,9 @@ def find_movie(message: types.Message):
     movies = ia.search_movie(title=message.text, results=3)
     for movie in movies:
         ia.update(movie, info=['plot', 'vote details'])
-    movies.sort(key=lambda mov: sum(mov.get('number of votes').values()), reverse=True)
     if movies:
+        movies.sort(key=lambda mov: sum(mov.get('number of votes').values()), reverse=True)
+        bot.send_message(user_id, movies[0].summary())
         bot.send_message(user_id, movies[0]['plot'])
         bot.send_photo(user_id, movies[0]['full-size cover url'], movies[0]['title'])
     else:
