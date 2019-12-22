@@ -17,7 +17,7 @@ def find_movie(message: types.Message):
     from imdb import IMDb
     ia = IMDb()
     user_id = message.from_user.id
-    movie = ia.search_movie(title=message.text).sort(key=lambda mov: mov['rating'], reverse=True)
+    movie = ia.search_movie(title=message.text, results=10).sort(key=lambda mov: mov['faqs'], reverse=True)
     if movie:
         bot.send_message(user_id, movie[0].summary())
         bot.send_photo(user_id, movie[0]['full-size cover url'], movie[0]['title'])
@@ -26,4 +26,4 @@ def find_movie(message: types.Message):
 
 
 if __name__ == '__main__':
-    bot.polling(none_stop=True, timeout=123)
+    bot.polling(none_stop=True)
