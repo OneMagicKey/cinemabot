@@ -36,8 +36,7 @@ def find_movie(message: types.Message):
         watch_text = ''
         for link in links:
             watch_text += link + '\n'
-        loop = asyncio.new_event_loop()
-        loop.run_until_complete(bot.send_message(user_id, watch_text))
+        bot.send_message(user_id, 'tests')
 
     else:
         from kinopoisk.movie import Movie
@@ -52,8 +51,7 @@ def find_movie(message: types.Message):
             watch_text = ''
             for link in links:
                 watch_text += link + '\n'
-            loop = asyncio.get_event_loop()
-            loop.run_until_complete(bot.send_message(user_id, watch_text))
+            bot.send_message(user_id, watch_text)
         else:
             bot.send_message(user_id, "Can't find " + message.text)
 
