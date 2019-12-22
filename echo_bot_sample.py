@@ -17,13 +17,16 @@ def find_movie(message: types.Message):
     from imdb import IMDb
     ia = IMDb()
     user_id = message.from_user.id
-    movies = ia.search_movie(title=message.text, results=3)
-    for movie in movies:
+    found_movies = ia.search_movie(title=message.text, results=3)
+    movies = []
+    for movie in found_movies:
         ia.update(movie, info=['plot', 'vote details'])
+        if type(movie.get('number of votes')) != 'NoneType':
+            movies.append(movie)
+
     if movies:
         movies.sort(key=lambda mov: sum(mov.get('number of votes').values()), reverse=True)
         bot.send_message(user_id, movies[0].summary())
-        bot.send_message(user_id, movies[0]['plot'])
         bot.send_photo(user_id, movies[0]['full-size cover url'], movies[0]['title'])
     else:
         bot.send_message(user_id, "Can't find " + message.text)
