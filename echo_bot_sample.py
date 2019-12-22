@@ -1,9 +1,8 @@
 import config
 from telebot import types
-# from telebot import apihelper
 import telebot
-
-# apihelper.proxy = {'https': 'socks5://154.221.21.197:10800'}
+# from telebot import apihelper
+# apihelper.proxy = {'https': 'socks5h://54.39.16.26:41279'}
 bot = telebot.TeleBot(config.token)
 
 
@@ -18,7 +17,7 @@ def find_movie(message: types.Message):
     from imdb import IMDb
     ia = IMDb()
     user_id = message.from_user.id
-    movie = ia.search_movie(title=message.text)
+    movie = ia.search_movie(title=message.text).sort(key=lambda mov: mov['rating'], reverse=True)
     if movie:
         bot.send_message(user_id, movie[0].summary())
         bot.send_photo(user_id, movie[0]['full-size cover url'], movie[0]['title'])
@@ -27,4 +26,4 @@ def find_movie(message: types.Message):
 
 
 if __name__ == '__main__':
-    bot.polling()
+    bot.polling(none_stop=True, timeout=123)
