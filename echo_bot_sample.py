@@ -33,10 +33,10 @@ def find_movie(message: types.Message):
         bot.send_photo(user_id, movies[0]['full-size cover url'], movies[0]['title'])
         loop = asyncio.new_event_loop()
         links = loop.run_until_complete(find_watch_online_film(movies[0]['title'], movies[0]['year']))
-        watch_text = ''
+        watch_text = '\n\nLinks:\n'
         for link in links:
             watch_text += link + '\n'
-        bot.send_message(user_id, 'tests')
+        bot.send_message(user_id, watch_text)
 
     else:
         from kinopoisk.movie import Movie
@@ -48,7 +48,7 @@ def find_movie(message: types.Message):
             bot.send_photo(user_id, movie.posters[0], movie.title)
             loop = asyncio.new_event_loop()
             links = loop.run_until_complete(find_watch_online_film(movie.title, movie.year))
-            watch_text = ''
+            watch_text = '\n\nLinks:\n'
             for link in links:
                 watch_text += link + '\n'
             bot.send_message(user_id, watch_text)
@@ -74,7 +74,7 @@ async def find_watch_online_film(title: str, year: str):
     async with aiohttp.ClientSession() as session:
         for url, trunc_url in zip(rus_urls, trunc_rus_urls):
             params = {
-                'q': 'site:' + url + ' ' + title + ' ' + str(year) + ' смотреть',
+                'q': 'site:' + url + ' ' + title + ' смотреть',
             }
             async with session.get(google, params=params, headers=header) as resp:
                 search_rsp = await resp.text()
