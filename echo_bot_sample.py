@@ -1,8 +1,10 @@
+import aiohttp
+from bs4 import BeautifulSoup
+
 import config
 from telebot import types
 import telebot
-# from telebot import apihelper
-# apihelper.proxy = {'https': 'socks5h://54.39.16.26:41279'}
+
 bot = telebot.TeleBot(config.token)
 
 
@@ -28,6 +30,7 @@ def find_movie(message: types.Message):
         movies.sort(key=lambda mov: sum(mov.get('number of votes').values()), reverse=True)
         bot.send_message(user_id, movies[0].summary())
         bot.send_photo(user_id, movies[0]['full-size cover url'], movies[0]['title'])
+        find_watch_online_film(movies[0]['title'], movies[0]['year'])
     else:
         from kinopoisk.movie import Movie
         movie = Movie.objects.search(message.text)[0]
@@ -36,8 +39,39 @@ def find_movie(message: types.Message):
             movie.get_content('posters')
             bot.send_message(user_id, movie.title + '\n' + movie.plot)
             bot.send_photo(user_id, movie.posters[0], movie.title)
+            find_watch_online_film(movie.title, movie.year)
         else:
             bot.send_message(user_id, "Can't find " + message.text)
+
+
+def find_watch_online_film(title: str, year: str):
+    rus_urls = [
+        'https://www.ivi.ru',
+        'https://okko.tv',
+        'https://www.tvzavr.ru',
+    ]
+    trunc_rus_urls = ['.'.join(url.split('.')[:-1]) for url in rus_urls]
+    google = 'https://www.google.ru/search'
+    header = {
+        'user-agent': (
+            'Mozilla/5.0 (X11; U; Linux i686; ru; rv:1.9.1.8) Gecko/20100214 Linux Mint/8 (Helena) Firefox/'
+                      '3.5.8'
+        )
+    }
+    movies_links = []
+    with aiohttp.ClientSession() as session:
+        for url, trunc_url in zip(rus_urls, trunc_rus_urls):
+            params = {
+                'q': 'site:' + url + ' ' + title + ' ' + year + ' смотреть',
+            }
+            with session.get(google, params=params, headers=header) as resp:
+                search_rsp = resp.text()
+                soup = BeautifulSoup(search_rsp, 'lxml')
+                for link in soup.find_all('a'):
+                    if link.get('href') and link.get('href').startswith(trunc_url):
+                        movies_links.append(link.get('href'))
+                        break
+    return movies_links
 
 
 if __name__ == '__main__':
