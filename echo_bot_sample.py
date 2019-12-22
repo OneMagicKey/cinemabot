@@ -36,7 +36,8 @@ def find_movie(message: types.Message):
         watch_text = ''
         for link in links:
             watch_text += link + '\n'
-        bot.send_message(user_id, watch_text)
+        loop = asyncio.new_event_loop()
+        loop.run_until_complete(bot.send_message(user_id, watch_text))
 
     else:
         from kinopoisk.movie import Movie
@@ -46,13 +47,13 @@ def find_movie(message: types.Message):
             movie.get_content('posters')
             bot.send_message(user_id, movie.title + '\n' + movie.plot)
             bot.send_photo(user_id, movie.posters[0], movie.title)
-            # loop = asyncio.new_event_loop()
-            # links = loop.run_until_complete(find_watch_online_film(movie.title, movie.year))
-            links = ['test']
+            loop = asyncio.new_event_loop()
+            links = loop.run_until_complete(find_watch_online_film(movie.title, movie.year))
             watch_text = ''
             for link in links:
                 watch_text += link + '\n'
-            bot.send_message(user_id, watch_text)
+            loop = asyncio.get_event_loop()
+            loop.run_until_complete(bot.send_message(user_id, watch_text))
         else:
             bot.send_message(user_id, "Can't find " + message.text)
 
