@@ -18,11 +18,11 @@ def find_movie(message: types.Message):
     from imdb import IMDb
     ia = IMDb()
     user_id = message.from_user.id
-    movie = ia.search_movie(title=message.text)
+    movie = ia.search_movie(title=message.text, results=1)
     if movie:
-        bot.send_message(user_id, movie[0].get_current_info())
-    else:
-        bot.send_message(user_id, "Can't find" + message.text)
+        bot.send_message(user_id, 'trt') #movie.get_current_info()
+    #else:
+    #    bot.send_message(user_id, "Can't find" + message.text)
 
 
 if __name__ == '__main__':
