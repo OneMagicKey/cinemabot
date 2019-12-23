@@ -59,7 +59,7 @@ def find_movie_in_ru(message: types.Message, user_id: str):
         bot.send_message(user_id, movie.title + '\n' + movie.plot)
         bot.send_photo(user_id, movie.posters[0])
         loop = asyncio.new_event_loop()
-        links = loop.run_until_complete(find_watch_online_film(movie.title, movie.year))
+        links = loop.run_until_complete(find_watch_online_ru(movie.title, movie.year))
         refs = ''
         for link in links:
             refs += link + '\n'
@@ -82,7 +82,7 @@ def find_movie_in_en(message: types.Message, user_id: str):
         bot.send_message(user_id, movies[0].summary())
         bot.send_photo(user_id, movies[0]['full-size cover url'])
         loop = asyncio.new_event_loop()
-        links = loop.run_until_complete(find_watch_online_film(movies[0]['title'], movies[0]['year']))
+        links = loop.run_until_complete(find_watch_online_en(movies[0]['title'], movies[0]['year']))
         refs = ''
         for link in links:
             refs += link + '\n'
