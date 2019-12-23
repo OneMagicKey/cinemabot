@@ -27,12 +27,64 @@ def start_command(message: types.Message):
                              types.InlineKeyboardButton('English', callback_data='language_en')))
     else:
         text = (
-            'Select your language\n\n'
+            'Select your language \n\n'
             'Films will be searched in chosen language'
         )
         bot.send_message(user_id, text, parse_mode='markdown', reply_markup=types.InlineKeyboardMarkup().
                          row(types.InlineKeyboardButton('Русский', callback_data='language_ru'),
                              types.InlineKeyboardButton('English', callback_data='language_en')))
+
+
+@bot.message_handler(commands=['help'])
+def help_command(message: types.Message):
+    user_id = message.from_user.id
+    if usr_language.setdefault[user_id:'en'] == 'en':
+        text = (
+            'Please use /start command to start the bot and choose the language \n'
+            'You can use /settings command to change language \n'
+            'Examples: \n'
+            'Venom \n'
+            'Avengers Endgame \n'
+            'Rick and Morty'
+        )
+        bot.send_message(user_id, text, parse_mode='markdown')
+    else:
+        text = (
+            'Используйте команду /start для старта бота и выберете язык \n'
+            'Команда /settings позволяет сменить язык бота \n'
+            'Примеры запросов к боту: \n'
+            'Веном \n'
+            'Мстители Финал \n'
+            'Рик и Морти'
+        )
+        bot.send_message(user_id, text, parse_mode='markdown')
+
+
+@bot.message_handler(commands=['settings'])
+def help_command(message: types.Message):
+    user_id = message.from_user.id
+    if user_id not in users:
+        text = (
+            'You should /start the bot and choose the language'
+        )
+        bot.send_message(user_id, text)
+    else:
+        if usr_language[user_id] == 'ru':
+            text = (
+                'Выберите язык \n\n'
+                'Поиск фильмов осуществляется на выбранном языке'
+            )
+            bot.send_message(user_id, text, parse_mode='markdown', reply_markup=types.InlineKeyboardMarkup().
+                             row(types.InlineKeyboardButton('Русский', callback_data='language_ru'),
+                                 types.InlineKeyboardButton('English', callback_data='language_en')))
+        else:
+            text = (
+                'Select your language \n\n'
+                'Films will be searched in chosen language'
+            )
+            bot.send_message(user_id, text, parse_mode='markdown', reply_markup=types.InlineKeyboardMarkup().
+                             row(types.InlineKeyboardButton('Русский', callback_data='language_ru'),
+                                 types.InlineKeyboardButton('English', callback_data='language_en')))
 
 
 @bot.message_handler(func=lambda m: True)
@@ -79,7 +131,7 @@ def find_movie_in_en(message: types.Message, user_id: str):
     movies = []
     for movie in found_movies:
         ia.update(movie, info=['plot', 'vote details'])
-        if movie.get('number of votes') is not None:
+        if movie.get('number of votes') is not None and movie.get('plot') is not None:
             movies.append(movie)
     if movies:
         movies.sort(key=lambda mov: sum(mov.get('number of votes').values()), reverse=True)
