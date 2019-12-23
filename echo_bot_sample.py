@@ -113,8 +113,8 @@ def find_movie_in_ru(message: types.Message, user_id: str):
         movie.get_content('main_page')
         bot.send_message(user_id, movie.title + '\n' + movie.plot)
         try:
-            # movie.get_content('posters')
-            bot.send_photo(user_id, movie.url)
+            print(movie.id)
+            # bot.send_photo(user_id, movie.url)
         except ValueError:
             pass
         # loop = asyncio.new_event_loop()
