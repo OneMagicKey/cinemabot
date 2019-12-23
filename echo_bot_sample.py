@@ -17,38 +17,37 @@ def start_command(message: types.Message):
 
 @bot.message_handler(func=lambda m: True)
 def find_movie(message: types.Message):
-    from imdb import IMDb
-    ia = IMDb()
     user_id = message.from_user.id
-    found_movies = ia.search_movie(title=message.text, results=3)
-    movies = []
-    for movie in found_movies:
-        ia.update(movie, info=['plot', 'vote details'])
-        if movie.get('number of votes') is not None:
-            movies.append(movie)
-
-    if movies:
-        movies.sort(key=lambda mov: sum(mov.get('number of votes').values()), reverse=True)
-        bot.send_message(user_id, movies[0].summary())
-        bot.send_photo(user_id, movies[0]['full-size cover url'], movies[0]['title'])
+    from kinopoisk.movie import Movie
+    movie = Movie.objects.search(message.text)[0]
+    if movie:
+        movie.get_content('main_page')
+        movie.get_content('posters')
+        bot.send_message(user_id, movie.title + '\n' + movie.plot)
+        bot.send_photo(user_id, movie.posters[0], movie.title)
         loop = asyncio.new_event_loop()
-        links = loop.run_until_complete(find_watch_online_film(movies[0]['title'], movies[0]['year']))
-        watch_text = '\n\nLinks:\n'
+        links = loop.run_until_complete(find_watch_online_film(movie.title, movie.year))
+        watch_text = ''
         for link in links:
             watch_text += link + '\n'
         bot.send_message(user_id, watch_text)
-
     else:
-        from kinopoisk.movie import Movie
-        movie = Movie.objects.search(message.text)[0]
-        if movie:
-            movie.get_content('main_page')
-            movie.get_content('posters')
-            bot.send_message(user_id, movie.title + '\n' + movie.plot)
-            bot.send_photo(user_id, movie.posters[0], movie.title)
+        from imdb import IMDb
+        ia = IMDb()
+        found_movies = ia.search_movie(title=message.text, results=3)
+        movies = []
+        for movie in found_movies:
+            ia.update(movie, info=['plot', 'vote details'])
+            if movie.get('number of votes') is not None:
+                movies.append(movie)
+
+        if movies:
+            movies.sort(key=lambda mov: sum(mov.get('number of votes').values()), reverse=True)
+            bot.send_message(user_id, movies[0].summary())
+            bot.send_photo(user_id, movies[0]['full-size cover url'], movies[0]['title'])
             loop = asyncio.new_event_loop()
-            links = loop.run_until_complete(find_watch_online_film(movie.title, movie.year))
-            watch_text = '\n\nLinks:\n'
+            links = loop.run_until_complete(find_watch_online_film(movies[0]['title'], movies[0]['year']))
+            watch_text = ''
             for link in links:
                 watch_text += link + '\n'
             bot.send_message(user_id, watch_text)
