@@ -63,7 +63,7 @@ async def find_watch_online_film(title: str, year: str):
         'https://www.tvzavr.ru',
     ]
     trunc_rus_urls = ['.'.join(url.split('.')[:-1]) for url in rus_urls]
-    google = 'https://www.google.com/search/'
+    google = 'https://www.google.com'
     header = {
         'user-agent': (
             'Mozilla/5.0 (X11; U; Linux i686; ru; rv:1.9.1.8) Gecko/20100214 Linux Mint/8 (Helena) Firefox/'
