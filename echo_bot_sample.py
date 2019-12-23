@@ -3,7 +3,6 @@ import aiohttp
 from bs4 import BeautifulSoup
 
 import config
-import keyword as kb
 from telebot import types
 import telebot
 
@@ -19,14 +18,17 @@ def start_command(message: types.Message):
     usr_language[user_id] = 'en'
     bot.send_message(user_id, "Welcome to cinema bot!")
     if usr_language[user_id] == 'ru':
-        bot.send_message(user_id, 'Выберите язык', reply_markup=types.InlineKeyboardMarkup().
+        text = (
+            'Выберите язык \n\n'
+            'Поиск фильмов осуществляется на выбранном языке'
+        )
+        bot.send_message(user_id, text, parse_mode='markdown', reply_markup=types.InlineKeyboardMarkup().
                          row(types.InlineKeyboardButton('Русский', callback_data='language_ru'),
                              types.InlineKeyboardButton('English', callback_data='language_en')))
     else:
         text = (
             'Select your language\n\n'
-            '*Note: If you select any language other than Russian and English, I will continue'
-            ' to speak English with you, but movies will be shown on the selected language*'
+            'Films are searched in your chosen language'
         )
         bot.send_message(user_id, text, parse_mode='markdown', reply_markup=types.InlineKeyboardMarkup().
                          row(types.InlineKeyboardButton('Русский', callback_data='language_ru'),
@@ -36,6 +38,13 @@ def start_command(message: types.Message):
 @bot.message_handler(func=lambda m: True)
 def find_movie(message: types.Message):
     user_id = message.from_user.id
+    if usr_language[user_id] == 'ru':
+        find_movie_in_ru(message, user_id)
+    else:
+        find_movie_in_en(message, user_id)
+
+
+def find_movie_in_ru(message: types.Message, user_id: str):
     from kinopoisk.movie import Movie
     movie = Movie.objects.search(message.text)[0]
     if movie:
@@ -45,32 +54,35 @@ def find_movie(message: types.Message):
         bot.send_photo(user_id, movie.posters[0])
         loop = asyncio.new_event_loop()
         links = loop.run_until_complete(find_watch_online_film(movie.title, movie.year))
-        watch_text = ''
+        refs = ''
         for link in links:
-            watch_text += link + '\n'
-        bot.send_message(user_id, watch_text)
+            refs += link + '\n'
+        bot.send_message(user_id, refs)
     else:
-        from imdb import IMDb
-        ia = IMDb()
-        found_movies = ia.search_movie(title=message.text, results=3)
-        movies = []
-        for movie in found_movies:
-            ia.update(movie, info=['plot', 'vote details'])
-            if movie.get('number of votes') is not None:
-                movies.append(movie)
+        bot.send_message(user_id, "Не могу найти " + message.text)
 
-        if movies:
-            movies.sort(key=lambda mov: sum(mov.get('number of votes').values()), reverse=True)
-            bot.send_message(user_id, movies[0].summary())
-            bot.send_photo(user_id, movies[0]['full-size cover url'])
-            loop = asyncio.new_event_loop()
-            links = loop.run_until_complete(find_watch_online_film(movies[0]['title'], movies[0]['year']))
-            watch_text = ''
-            for link in links:
-                watch_text += link + '\n'
-            bot.send_message(user_id, watch_text)
-        else:
-            bot.send_message(user_id, "Can't find " + message.text)
+
+def find_movie_in_en(message: types.Message, user_id: str):
+    from imdb import IMDb
+    ia = IMDb()
+    found_movies = ia.search_movie(title=message.text, results=3)
+    movies = []
+    for movie in found_movies:
+        ia.update(movie, info=['plot', 'vote details'])
+        if movie.get('number of votes') is not None:
+            movies.append(movie)
+    if movies:
+        movies.sort(key=lambda mov: sum(mov.get('number of votes').values()), reverse=True)
+        bot.send_message(user_id, movies[0].summary())
+        bot.send_photo(user_id, movies[0]['full-size cover url'])
+        loop = asyncio.new_event_loop()
+        links = loop.run_until_complete(find_watch_online_film(movies[0]['title'], movies[0]['year']))
+        refs = ''
+        for link in links:
+            refs += link + '\n'
+        bot.send_message(user_id, refs)
+    else:
+        bot.send_message(user_id, "Can't find " + message.text)
 
 
 async def find_watch_online_film(title: str, year: str):
@@ -105,6 +117,14 @@ async def find_watch_online_film(title: str, year: str):
                         movies_links.append(link.get('href')[7:].split('&')[0])
                         break
     return movies_links
+
+
+@bot.callback_query_handler(func=lambda call: True)
+def callback_inline(call: types.CallbackQuery):
+    data = call.data.split('_')
+    user_id = call.from_user.id
+    if data[1] == 'ru':
+        usr_language[user_id] = 'ru'
 
 
 if __name__ == '__main__':
