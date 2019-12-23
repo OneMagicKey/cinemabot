@@ -112,8 +112,11 @@ def find_movie_in_ru(message: types.Message, user_id: str):
         setattr(movie, 'career', {})
         movie.get_content('main_page')
         bot.send_message(user_id, movie.title + '\n' + movie.plot)
-        movie.get_content('posters')
-        bot.send_photo(user_id, movie.posters[0])
+        try:
+            # movie.get_content('posters')
+            bot.send_photo(user_id, movie.url)
+        except ValueError:
+            pass
         # loop = asyncio.new_event_loop()
         links = find_watch_online_ru(movie.title, movie.year)
         refs = ''
