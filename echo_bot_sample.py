@@ -16,7 +16,7 @@ def start_command(message: types.Message):
     user_id = message.from_user.id
     users.append(user_id)
     usr_language[user_id] = 'en'
-    bot.send_message(user_id, "Welcome to cinema bot!")
+    bot.send_message(user_id, "Welcome to the cinema bot!")
     if usr_language[user_id] == 'ru':
         text = (
             'Выберите язык \n\n'
@@ -28,7 +28,7 @@ def start_command(message: types.Message):
     else:
         text = (
             'Select your language\n\n'
-            'Films are searched in your chosen language'
+            'Films will be searched in chosen language'
         )
         bot.send_message(user_id, text, parse_mode='markdown', reply_markup=types.InlineKeyboardMarkup().
                          row(types.InlineKeyboardButton('Русский', callback_data='language_ru'),
@@ -79,7 +79,7 @@ def find_movie_in_en(message: types.Message, user_id: str):
             movies.append(movie)
     if movies:
         movies.sort(key=lambda mov: sum(mov.get('number of votes').values()), reverse=True)
-        bot.send_message(user_id, movies[0].summary())
+        bot.send_message(user_id, movies[0]['title'] + '\n' + movies[0]['plot'])
         bot.send_photo(user_id, movies[0]['full-size cover url'])
         # loop = asyncio.new_event_loop()
         links = find_watch_online_en(movies[0]['title'], movies[0]['year'])
