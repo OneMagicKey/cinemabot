@@ -113,7 +113,7 @@ def find_movie_in_ru(message: types.Message, user_id: str):
         movie.get_content('main_page')
         bot.send_message(user_id, movie.title + '\n' + movie.plot)
         try:
-            photo = 'https://st.kp.yandex.net/images/film_big/' + movie.id + '.jpg'
+            photo = 'https://st.kp.yandex.net/images/film_big/' + str(movie.id) + '.jpg'
             bot.send_photo(user_id, photo)
         except ValueError:
             pass
