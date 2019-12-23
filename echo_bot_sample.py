@@ -63,7 +63,7 @@ async def find_watch_online_film(title: str, year: str):
         'https://www.tvzavr.ru',
     ]
     trunc_rus_urls = ['.'.join(url.split('.')[:-1]) for url in rus_urls]
-    google = 'https://www.google.com/search'
+    google = 'https://www.google.com/search?'
     header = {
         'user-agent': (
             'Mozilla/5.0 (X11; U; Linux i686; ru; rv:1.9.1.8) Gecko/20100214 Linux Mint/8 (Helena) Firefox/'
@@ -76,7 +76,9 @@ async def find_watch_online_film(title: str, year: str):
             params = {
                 'q': 'site:' + url + ' ' + title + ' смотреть фильм',
             }
-            async with session.get(google, params=params, headers=header) as resp:
+            google += 'q=' + 'site:' + url + '%20' + title + '%20смотреть%20фильм'
+            print(google)
+            async with session.get(google, headers=header) as resp:
                 search_rsp = await resp.text()
                 soup = BeautifulSoup(search_rsp, 'lxml')
                 for link in soup.find_all('a'):
