@@ -58,8 +58,8 @@ def find_movie_in_ru(message: types.Message, user_id: str):
         movie.get_content('posters')
         bot.send_message(user_id, movie.title + '\n' + movie.plot)
         bot.send_photo(user_id, movie.posters[0])
-        loop = asyncio.new_event_loop()
-        links = loop.run_until_complete(find_watch_online_ru(movie.title, movie.year))
+        # loop = asyncio.new_event_loop()
+        links = find_watch_online_ru(movie.title, movie.year)
         refs = ''
         for link in links:
             refs += link + '\n'
@@ -81,8 +81,8 @@ def find_movie_in_en(message: types.Message, user_id: str):
         movies.sort(key=lambda mov: sum(mov.get('number of votes').values()), reverse=True)
         bot.send_message(user_id, movies[0].summary())
         bot.send_photo(user_id, movies[0]['full-size cover url'])
-        loop = asyncio.new_event_loop()
-        links = loop.run_until_complete(find_watch_online_en(movies[0]['title'], movies[0]['year']))
+        # loop = asyncio.new_event_loop()
+        links = find_watch_online_en(movies[0]['title'], movies[0]['year'])
         refs = ''
         for link in links:
             refs += link + '\n'
@@ -91,7 +91,7 @@ def find_movie_in_en(message: types.Message, user_id: str):
         bot.send_message(user_id, "Can't find " + message.text)
 
 
-async def find_watch_online_ru(title: str, year: str):
+def find_watch_online_ru(title: str, year: str):
     urls = [
         'https://www.ivi.ru',
         'http://kinodron.net/',
@@ -105,7 +105,7 @@ async def find_watch_online_ru(title: str, year: str):
     return asyncio.new_event_loop().run_until_complete(find_watch_online_film(urls, title, year, text))
 
 
-async def find_watch_online_en(title: str, year: str):
+def find_watch_online_en(title: str, year: str):
     urls = [
         'https://www.amazon.com',
         'https://www.netflix.com',
