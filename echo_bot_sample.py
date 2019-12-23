@@ -76,13 +76,14 @@ async def find_watch_online_film(title: str, year: str):
             params = {
                 'q': 'site:' + url + ' ' + title + ' смотреть фильм',
             }
+            google = 'https://www.google.com/search?'
             google += 'q=' + 'site:' + url + '%20' + title + '%20смотреть%20фильм'
             print(google)
             async with session.get(google, headers=header) as resp:
                 search_rsp = await resp.text()
                 soup = BeautifulSoup(search_rsp, 'lxml')
                 for link in soup.find_all('a'):
-                    if link.get('href'): #and link.get('href').startswith(trunc_url)
+                    if link.get('href') and link.get('href').startswith(trunc_url):
                         movies_links.append(link.get('href'))
                         break
     return movies_links
