@@ -38,10 +38,16 @@ def start_command(message: types.Message):
 @bot.message_handler(func=lambda m: True)
 def find_movie(message: types.Message):
     user_id = message.from_user.id
-    if usr_language[user_id] == 'ru':
-        find_movie_in_ru(message, user_id)
+    if user_id not in users:
+        text = (
+            'You should /start the bot and choose the language'
+        )
+        bot.send_message(user_id, text)
     else:
-        find_movie_in_en(message, user_id)
+        if usr_language[user_id] == 'ru':
+            find_movie_in_ru(message, user_id)
+        else:
+            find_movie_in_en(message, user_id)
 
 
 def find_movie_in_ru(message: types.Message, user_id: str):
@@ -85,8 +91,8 @@ def find_movie_in_en(message: types.Message, user_id: str):
         bot.send_message(user_id, "Can't find " + message.text)
 
 
-async def find_watch_online_film(title: str, year: str):
-    rus_urls = [
+async def find_watch_online_ru(title: str, year: str):
+    urls = [
         'https://www.ivi.ru',
         'http://kinodron.net/',
         'https://tv.filmshd.fun/',
@@ -95,7 +101,20 @@ async def find_watch_online_film(title: str, year: str):
         'https://www.tvzavr.ru',
         'https://megogo.ru/'
     ]
-    trunc_rus_urls = ['.'.join(url.split('.')[:-1]) for url in rus_urls]
+    return find_watch_online_film(urls, title, year)
+
+
+async def find_watch_online_en(title: str, year: str):
+    urls = [
+        'https://www.amazon.com',
+        'https://www.netflix.com',
+        'https://itunes.apple.com/'
+    ]
+    return find_watch_online_film(urls, title, year)
+
+
+async def find_watch_online_film(urls, title: str, year: str):
+    trunc_urls = ['.'.join(url.split('.')[:-1]) for url in urls]
     google = 'https://www.google.com/search?'
     header = {
         'user-agent': (
@@ -105,7 +124,7 @@ async def find_watch_online_film(title: str, year: str):
     }
     movies_links = []
     async with aiohttp.ClientSession() as session:
-        for url, trunc_url in zip(rus_urls, trunc_rus_urls):
+        for url, trunc_url in zip(urls, trunc_urls):
             params = {
                 'q': 'site:' + url + ' ' + title + ' ' + str(year) + ' ' + 'смотреть фильм',
             }
