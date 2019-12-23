@@ -101,7 +101,8 @@ async def find_watch_online_ru(title: str, year: str):
         'https://www.tvzavr.ru',
         'https://megogo.ru/'
     ]
-    return find_watch_online_film(urls, title, year)
+    text = 'смотреть онлайн'
+    return asyncio.new_event_loop().run_until_complete(find_watch_online_film(urls, title, year, text))
 
 
 async def find_watch_online_en(title: str, year: str):
@@ -110,10 +111,11 @@ async def find_watch_online_en(title: str, year: str):
         'https://www.netflix.com',
         'https://itunes.apple.com/'
     ]
-    return find_watch_online_film(urls, title, year)
+    text = 'watch online'
+    return asyncio.new_event_loop().run_until_complete(find_watch_online_film(urls, title, year, text))
 
 
-async def find_watch_online_film(urls, title: str, year: str):
+async def find_watch_online_film(urls, title: str, year: str, text):
     trunc_urls = ['.'.join(url.split('.')[:-1]) for url in urls]
     google = 'https://www.google.com/search?'
     header = {
@@ -126,7 +128,7 @@ async def find_watch_online_film(urls, title: str, year: str):
     async with aiohttp.ClientSession() as session:
         for url, trunc_url in zip(urls, trunc_urls):
             params = {
-                'q': 'site:' + url + ' ' + title + ' ' + str(year) + ' ' + 'смотреть фильм',
+                'q': 'site:' + url + ' ' + title + ' ' + str(year) + ' ' + text,
             }
             async with session.get(google, params=params, headers=header) as resp:
                 search_rsp = await resp.text()
