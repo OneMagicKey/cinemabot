@@ -42,8 +42,8 @@ def help_command(message: types.Message):
         text = (
             'Please use /start command to start the bot and choose the language \n'
             'You can use /settings command to change language \n'
-            'After that you may start using the bot and find movies'
-            'Examples: \n'
+            'After that you may start using the bot and find movies \n'
+            'Query examples: \n'
             'Venom \n'
             'Avengers Endgame \n'
             'Rick and Morty'
@@ -53,7 +53,7 @@ def help_command(message: types.Message):
         text = (
             'Используйте команду /start для старта бота и выберете язык \n'
             'Команда /settings позволяет сменить язык бота \n'
-            'После этого можно попросить бота найти фильм'
+            'После этого можно попросить бота найти фильм \n'
             'Примеры запросов к боту: \n'
             'Веном \n'
             'Мстители Финал \n'
@@ -207,6 +207,8 @@ def callback_inline(call: types.CallbackQuery):
     user_id = call.from_user.id
     if data[1] == 'ru':
         usr_language[user_id] = 'ru'
+    else:
+        usr_language[user_id] = 'en'
 
 
 if __name__ == '__main__':
