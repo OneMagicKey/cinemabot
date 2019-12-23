@@ -3,16 +3,34 @@ import aiohttp
 from bs4 import BeautifulSoup
 
 import config
+import keyword as kb
 from telebot import types
 import telebot
 
 bot = telebot.TeleBot(config.token)
+users = []
+usr_language = {}
 
 
 @bot.message_handler(commands=['start'])
 def start_command(message: types.Message):
     user_id = message.from_user.id
+    users.append(user_id)
+    usr_language[user_id] = 'en'
     bot.send_message(user_id, "Welcome to cinema bot!")
+    if usr_language[user_id] == 'ru':
+        bot.send_message(user_id, 'Выберите язык', reply_markup=types.InlineKeyboardMarkup().
+                         row(types.InlineKeyboardButton('Русский', callback_data='language_ru'),
+                             types.InlineKeyboardButton('English', callback_data='language_en')))
+    else:
+        text = (
+            'Select your language\n\n'
+            '*Note: If you select any language other than Russian and English, I will continue'
+            ' to speak English with you, but movies will be shown on the selected language*'
+        )
+        bot.send_message(user_id, text, parse_mode='markdown', reply_markup=types.InlineKeyboardMarkup().
+                         row(types.InlineKeyboardButton('Русский', callback_data='language_ru'),
+                             types.InlineKeyboardButton('English', callback_data='language_en')))
 
 
 @bot.message_handler(func=lambda m: True)
