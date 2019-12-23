@@ -59,8 +59,11 @@ def find_movie(message: types.Message):
 async def find_watch_online_film(title: str, year: str):
     rus_urls = [
         'https://www.ivi.ru',
+        'https://more.tv/',
+        'http://kinodron.net/',
         'https://okko.tv',
         'https://www.tvzavr.ru',
+        'https://megogo.ru/'
     ]
     trunc_rus_urls = ['.'.join(url.split('.')[:-1]) for url in rus_urls]
     google = 'https://www.google.com/search?'
@@ -74,7 +77,7 @@ async def find_watch_online_film(title: str, year: str):
     async with aiohttp.ClientSession() as session:
         for url, trunc_url in zip(rus_urls, trunc_rus_urls):
             params = {
-                'q': 'site:' + url + ' ' + title + ' смотреть фильм',
+                'q': 'site:' + url + ' ' + title + ' ' + year + ' ' + 'смотреть фильм',
             }
             # google = 'https://www.google.com/search?'
             # google += 'q=' + 'site:' + url + '%20' + title + '%20смотреть%20фильм'
