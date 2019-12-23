@@ -56,9 +56,12 @@ def find_movie_in_ru(message: types.Message, user_id: str):
     if movie:
         movie = movie[0]
         movie.get_content('main_page')
-        movie.get_content('posters')
         bot.send_message(user_id, movie.title + '\n' + movie.plot)
-        bot.send_photo(user_id, movie.posters[0])
+        try:
+            movie.get_content('posters')
+            bot.send_photo(user_id, movie.posters[0])
+        except ValueError:
+            pass
         # loop = asyncio.new_event_loop()
         links = find_watch_online_ru(movie.title, movie.year)
         refs = ''
@@ -81,7 +84,10 @@ def find_movie_in_en(message: types.Message, user_id: str):
     if movies:
         movies.sort(key=lambda mov: sum(mov.get('number of votes').values()), reverse=True)
         bot.send_message(user_id, str(movies[0]['title']) + '\n' + movies[0]['plot'][0])
-        bot.send_photo(user_id, movies[0]['full-size cover url'])
+        try:
+            bot.send_photo(user_id, movies[0]['full-size cover url'])
+        except telebot.apihelper.ApiException:
+            pass
         # loop = asyncio.new_event_loop()
         links = find_watch_online_en(movies[0]['title'], movies[0]['year'])
         refs = ''
