@@ -24,7 +24,7 @@ def find_movie(message: types.Message):
         movie.get_content('main_page')
         movie.get_content('posters')
         bot.send_message(user_id, movie.title + '\n' + movie.plot)
-        bot.send_photo(user_id, movie.posters[0], movie.title)
+        bot.send_photo(user_id, movie.posters[0])
         loop = asyncio.new_event_loop()
         links = loop.run_until_complete(find_watch_online_film(movie.title, movie.year))
         watch_text = ''
@@ -44,7 +44,7 @@ def find_movie(message: types.Message):
         if movies:
             movies.sort(key=lambda mov: sum(mov.get('number of votes').values()), reverse=True)
             bot.send_message(user_id, movies[0].summary())
-            bot.send_photo(user_id, movies[0]['full-size cover url'], movies[0]['title'])
+            bot.send_photo(user_id, movies[0]['full-size cover url'])
             loop = asyncio.new_event_loop()
             links = loop.run_until_complete(find_watch_online_film(movies[0]['title'], movies[0]['year']))
             watch_text = ''
@@ -58,9 +58,10 @@ def find_movie(message: types.Message):
 async def find_watch_online_film(title: str, year: str):
     rus_urls = [
         'https://www.ivi.ru',
-        'https://more.tv/',
         'http://kinodron.net/',
+        'https://tv.filmshd.fun/',
         'https://okko.tv',
+        'https://onlinemultfilmy.ru/',
         'https://www.tvzavr.ru',
         'https://megogo.ru/'
     ]
@@ -78,8 +79,6 @@ async def find_watch_online_film(title: str, year: str):
             params = {
                 'q': 'site:' + url + ' ' + title + ' ' + str(year) + ' ' + 'смотреть фильм',
             }
-            # google = 'https://www.google.com/search?'
-            # google += 'q=' + 'site:' + url + '%20' + title + '%20смотреть%20фильм'
             async with session.get(google, params=params, headers=header) as resp:
                 search_rsp = await resp.text()
                 soup = BeautifulSoup(search_rsp, 'lxml')
