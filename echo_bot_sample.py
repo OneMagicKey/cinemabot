@@ -109,8 +109,8 @@ def find_movie_in_ru(message: types.Message, user_id: str):
     movie = Movie.objects.search(message.text)
     if movie:
         movie = movie[0]
-        movie.get_content('title')
-        movie.get_content('plot')
+        movie.get_content('main_page')
+        movie.get_content('cast')
         bot.send_message(user_id, movie.title + '\n' + movie.plot)
         try:
             movie.get_content('posters')
