@@ -16,7 +16,7 @@ def start_command(message: types.Message):
     user_id = message.from_user.id
     users.append(user_id)
     usr_language[user_id] = 'en'
-    bot.send_message(user_id, "Welcome to the cinema bot!")
+    bot.send_message(user_id, 'Welcome to the cinema bot!')
     if usr_language[user_id] == 'ru':
         text = (
             'Выберите язык \n\n'
@@ -109,7 +109,7 @@ def find_movie_in_ru(message: types.Message, user_id: str):
     movie = Movie.objects.search(message.text)
     if movie:
         movie = movie[0]
-        movie.get_content('main_page')
+        movie.get_content(['title', 'plot'])
         bot.send_message(user_id, movie.title + '\n' + movie.plot)
         try:
             movie.get_content('posters')
