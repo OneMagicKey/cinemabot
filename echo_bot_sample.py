@@ -52,8 +52,9 @@ def find_movie(message: types.Message):
 
 def find_movie_in_ru(message: types.Message, user_id: str):
     from kinopoisk.movie import Movie
-    movie = Movie.objects.search(message.text)[0]
+    movie = Movie.objects.search(message.text)
     if movie:
+        movie = movie[0]
         movie.get_content('main_page')
         movie.get_content('posters')
         bot.send_message(user_id, movie.title + '\n' + movie.plot)
