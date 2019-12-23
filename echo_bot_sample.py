@@ -38,10 +38,11 @@ def start_command(message: types.Message):
 @bot.message_handler(commands=['help'])
 def help_command(message: types.Message):
     user_id = message.from_user.id
-    if usr_language.setdefault[user_id:'en'] == 'en':
+    if usr_language.get(user_id, 'en') == 'en':
         text = (
             'Please use /start command to start the bot and choose the language \n'
             'You can use /settings command to change language \n'
+            'After that you may start using the bot and find movies'
             'Examples: \n'
             'Venom \n'
             'Avengers Endgame \n'
@@ -52,6 +53,7 @@ def help_command(message: types.Message):
         text = (
             'Используйте команду /start для старта бота и выберете язык \n'
             'Команда /settings позволяет сменить язык бота \n'
+            'После этого можно попросить бота найти фильм'
             'Примеры запросов к боту: \n'
             'Веном \n'
             'Мстители Финал \n'
