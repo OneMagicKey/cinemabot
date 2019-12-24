@@ -111,6 +111,7 @@ async def find_movie_in_ru(message: types.Message, user_id: str):
     for movie in movies:
         if movie.votes is not None:
             mov.append(movie)
+    print(mov)
     if mov:
         movie = mov.sort(key=lambda m: m.votes, reverse=True)
         print(movie)
