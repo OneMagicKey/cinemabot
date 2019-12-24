@@ -40,7 +40,7 @@ def help_command(message: types.Message):
     user_id = message.from_user.id
     if usr_language.get(user_id, 'en') == 'en':
         text = (
-            'Please use /start command to start the bot and choose the language \n'
+            'Please use /start command to start the bot and select the language \n'
             'You can use /settings command to change language \n'
             'After that you may start using the bot and find movies \n'
             'Query examples: \n'
@@ -48,7 +48,7 @@ def help_command(message: types.Message):
             'Avengers Endgame \n'
             'Rick and Morty'
         )
-        bot.send_message(user_id, text, parse_mode='markdown')
+        bot.send_message(user_id, text)
     else:
         text = (
             'Используйте команду /start для старта бота и выберете язык \n'
@@ -59,7 +59,7 @@ def help_command(message: types.Message):
             'Мстители Финал \n'
             'Рик и Морти'
         )
-        bot.send_message(user_id, text, parse_mode='markdown')
+        bot.send_message(user_id, text)
 
 
 @bot.message_handler(commands=['settings'])
@@ -67,7 +67,7 @@ def help_command(message: types.Message):
     user_id = message.from_user.id
     if user_id not in users:
         text = (
-            'You should /start the bot and choose the language'
+            'You should /start the bot and select the language'
         )
         bot.send_message(user_id, text)
     else:
@@ -111,7 +111,6 @@ async def find_movie_in_ru(message: types.Message, user_id: str):
     for movie in movies:
         if movie.votes is not None:
             mov.append(movie)
-    print(mov)
     if mov:
         mov.sort(key=lambda m: m.votes, reverse=True)
         movie = mov[0]
@@ -120,13 +119,11 @@ async def find_movie_in_ru(message: types.Message, user_id: str):
             movie.get_content('main_page')
         except IndexError:
             pass
-        bot.send_message(user_id, movie.title + '\n' + movie.plot)
+        bot.send_message(user_id, '*' + movie.title + '*' + '\n' + movie.plot, parse_mode='markdown')
         photo = 'https://st.kp.yandex.net/images/film_big/' + str(movie.id) + '.jpg'
         bot.send_photo(user_id, photo)
         links = await find_watch_online_ru(movie.title, movie.year)
-        refs = ''
-        for link in links:
-            refs += link + '\n'
+        refs = 'Ссылки: ' + '\n'.join(links)
         bot.send_message(user_id, refs)
     else:
         bot.send_message(user_id, "Не могу найти " + message.text)
@@ -149,9 +146,7 @@ async def find_movie_in_en(message: types.Message, user_id: str):
         except telebot.apihelper.ApiException:
             pass
         links = await find_watch_online_en(movies[0]['title'], movies[0]['year'])
-        refs = ''
-        for link in links:
-            refs += link + '\n'
+        refs = 'Links: ' + '\n'.join(links)
         bot.send_message(user_id, refs)
     else:
         bot.send_message(user_id, "Can't find " + message.text)
