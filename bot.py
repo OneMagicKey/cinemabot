@@ -163,7 +163,7 @@ async def find_watch_online_ru(title: str, year: str):
         'https://www.tvzavr.ru',
         'https://megogo.ru'
     ]
-    text = 'смотреть онлайн'
+    text = 'смотреть'
     return await find_watch_online_film(urls, title, year, text)
 
 
