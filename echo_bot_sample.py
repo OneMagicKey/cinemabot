@@ -110,7 +110,10 @@ def find_movie_in_ru(message: types.Message, user_id: str):
     if movie:
         movie = movie[0]
         setattr(movie, 'career', {})
-        movie.get_content('main_page')
+        try:
+            movie.get_content('main_page')
+        except IndexError:
+            pass
         bot.send_message(user_id, movie.title + '\n' + movie.plot)
         try:
             photo = 'https://st.kp.yandex.net/images/film_big/' + str(movie.id) + '.jpg'
