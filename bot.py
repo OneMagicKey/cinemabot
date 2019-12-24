@@ -117,7 +117,8 @@ async def find_movie_in_ru(message: types.Message, user_id: str):
         if movie.rating is not None:
             mov.append(movie)
     if mov:
-        movie = mov.sort(key=lambda m: m.rating, reverse=True)[0]
+        movie = mov.sort(key=lambda m: m.rating, reverse=True)
+        movie = movie[0]
         bot.send_message(user_id, movie.title + '\n' + movie.plot)
         photo = 'https://st.kp.yandex.net/images/film_big/' + str(movie.id) + '.jpg'
         bot.send_photo(user_id, photo)
