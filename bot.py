@@ -153,15 +153,15 @@ async def find_movie_in_en(message: types.Message, user_id: str):
 
 async def find_watch_online_ru(title: str, year: str):
     urls = [
-        'https://www.film.ru/'
+        'https://www.film.ru'
         'https://www.ivi.ru',
-        'http://kinodron.net/',
-        'https://tv.filmshd.fun/',
+        'http://kinodron.net',
+        'https://tv.filmshd.fun',
         'https://okko.tv',
-        'https://onlinemultfilmy.ru/',
-        'http://serialogo.ucoz.net/'
+        'https://onlinemultfilmy.ru',
+        'http://serialogo.ucoz.net'
         'https://www.tvzavr.ru',
-        'https://megogo.ru/'
+        'https://megogo.ru'
     ]
     text = 'смотреть онлайн'
     return await find_watch_online_film(urls, title, year, text)
@@ -171,7 +171,7 @@ async def find_watch_online_en(title: str, year: str):
     urls = [
         'https://www.amazon.com',
         'https://www.netflix.com',
-        'https://itunes.apple.com/'
+        'https://itunes.apple.com'
     ]
     text = 'watch online'
     return await find_watch_online_film(urls, title, year, text)
