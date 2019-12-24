@@ -153,15 +153,15 @@ async def find_movie_in_en(message: types.Message, user_id: str):
 
 async def find_watch_online_ru(title: str, year: str):
     urls = [
-        'https://www.film.ru'
+        'https://www.film.ru',
         'https://www.ivi.ru',
         'http://kinodron.net',
         'https://tv.filmshd.fun',
         'https://okko.tv',
         'https://onlinemultfilmy.ru',
-        'http://serialogo.ucoz.net'
+        'http://serialogo.ucoz.net',
         'https://www.tvzavr.ru',
-        'https://megogo.ru'
+        'https://megogo.ru',
     ]
     text = 'смотреть'
     return await find_watch_online_film(urls, title, year, text)
@@ -171,7 +171,7 @@ async def find_watch_online_en(title: str, year: str):
     urls = [
         'https://www.amazon.com',
         'https://www.netflix.com',
-        'https://itunes.apple.com'
+        'https://itunes.apple.com',
     ]
     text = 'watch online'
     return await find_watch_online_film(urls, title, year, text)
@@ -195,9 +195,7 @@ async def find_watch_online_film(urls, title: str, year: str, text):
             async with session.get(google, params=param, headers=header) as resp:
                 soup = BeautifulSoup(await resp.text(), 'lxml')
                 for link in soup.find_all('a'):
-                    print(link.get('href')[7:])
                     if link.get('href')[7:] and link.get('href')[7:].startswith(start_url):
-                        print('win!')
                         movies_links.append(link.get('href')[7:].split('&')[0])
                         break
     return movies_links
