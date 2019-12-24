@@ -110,12 +110,11 @@ async def find_movie_in_ru(message: types.Message, user_id: str):
     mov = []
     for movie in movies:
         if movie.votes is not None:
-            print(movie.votes)
             mov.append(movie)
     if mov:
-        print(mov)
-
-        movie = mov.sort(key=lambda m: m.votes, reverse=True)[0]
+        movie = mov.sort(key=lambda m: m.votes, reverse=True)
+        print(movie)
+        movie = movie[0]
         setattr(movie, 'career', {})
         try:
             movie.get_content('main_page')
