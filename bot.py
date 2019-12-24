@@ -109,6 +109,7 @@ async def find_movie_in_ru(message: types.Message, user_id: str):
     movie = Movie.objects.search(message.text)
     if movie:
         movie = movie[0]
+        print(movie.votes)
         setattr(movie, 'career', {})
         try:
             movie.get_content('main_page')
