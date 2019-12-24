@@ -117,7 +117,7 @@ async def find_movie_in_ru(message: types.Message, user_id: str):
         bot.send_message(user_id, movie.title + '\n' + movie.plot)
         photo = 'https://st.kp.yandex.net/images/film_big/' + str(movie.id) + '.jpg'
         bot.send_photo(user_id, photo)
-        links = asyncio.gather(find_watch_online_ru(movie.title, movie.year))
+        links = await find_watch_online_ru(movie.title, movie.year)
         refs = ''
         for link in links:
             refs += link + '\n'
@@ -164,7 +164,7 @@ async def find_watch_online_ru(title: str, year: str):
         'https://megogo.ru/'
     ]
     text = 'смотреть онлайн'
-    return asyncio.gather(find_watch_online_film(urls, title, year, text))
+    return await find_watch_online_film(urls, title, year, text)
 
 
 async def find_watch_online_en(title: str, year: str):
