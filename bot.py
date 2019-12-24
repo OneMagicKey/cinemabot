@@ -128,11 +128,11 @@ async def find_movie_in_ru(message: types.Message, user_id: str):
     from kinopoisk.movie import Movie
     movies = Movie.objects.search(message.text)
     mov = []
-    for movie in movies:
+    for movie in movies[:3]:
         if movie.votes is not None:
             mov.append(movie)
     if mov:
-        mov.sort(key=lambda m: m.votes, reverse=True)
+        # mov.sort(key=lambda m: m.votes, reverse=True)
         movie = mov[0]
         setattr(movie, 'career', {})
         try:
