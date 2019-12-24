@@ -107,18 +107,15 @@ def find_movie(message: types.Message):
 async def find_movie_in_ru(message: types.Message, user_id: str):
     from kinopoisk.movie import Movie
     movies = Movie.objects.search(message.text)
-    mov = []
-    for movie in movies[:5]:
+    if movies:
+        # movie = mov.sort(key=lambda m: m.rating, reverse=True)
+        movie = movies[0]
+        print(movie.rating)
         setattr(movie, 'career', {})
         try:
             movie.get_content('main_page')
         except IndexError:
             pass
-        if movie.rating is not None:
-            mov.append(movie)
-    if mov:
-        movie = mov.sort(key=lambda m: m.rating, reverse=True)
-        movie = movie[0]
         bot.send_message(user_id, movie.title + '\n' + movie.plot)
         photo = 'https://st.kp.yandex.net/images/film_big/' + str(movie.id) + '.jpg'
         bot.send_photo(user_id, photo)
