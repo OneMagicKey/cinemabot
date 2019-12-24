@@ -114,9 +114,9 @@ async def find_movie_in_ru(message: types.Message, user_id: str):
             movie.get_content('main_page')
         except IndexError:
             pass
-        await bot.send_message(user_id, movie.title + '\n' + movie.plot)
+        bot.send_message(user_id, movie.title + '\n' + movie.plot)
         photo = 'https://st.kp.yandex.net/images/film_big/' + str(movie.id) + '.jpg'
-        await bot.send_photo(user_id, photo)
+        bot.send_photo(user_id, photo)
         links = await find_watch_online_ru(movie.title, movie.year)
         refs = ''
         for link in links:
@@ -178,7 +178,7 @@ async def find_watch_online_en(title: str, year: str):
 
 
 async def find_watch_online_film(urls, title: str, year: str, text):
-    trunc_urls = ['.'.join(url.split('.')[:-1]) for url in urls]
+    start_urls = ['.'.join(url.split('.')[:-1]) for url in urls]
     google = 'https://www.google.com/search?'
     header = {
         'user-agent': (
@@ -188,15 +188,14 @@ async def find_watch_online_film(urls, title: str, year: str, text):
     }
     movies_links = []
     async with aiohttp.ClientSession() as session:
-        for url, trunc_url in zip(urls, trunc_urls):
+        for url, start_url in zip(urls, start_urls):
             params = {
                 'q': 'site:' + url + ' ' + title + ' ' + str(year) + ' ' + text,
             }
-            async with session.get(google, params=params, headers=header) as resp:
-                search_rsp = await resp.text()
-                soup = BeautifulSoup(search_rsp, 'lxml')
+            async with session.get(google, params=params) as resp:
+                soup = BeautifulSoup(await resp.text(), 'lxml')
                 for link in soup.find_all('a'):
-                    if link.get('href')[7:] and link.get('href')[7:].startswith(trunc_url):
+                    if link.get('href')[7:] and link.get('href')[7:].startswith(start_url):
                         movies_links.append(link.get('href')[7:].split('&')[0])
                         break
     return movies_links
