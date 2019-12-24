@@ -108,7 +108,8 @@ async def find_movie_in_ru(message: types.Message, user_id: str):
     from kinopoisk.movie import Movie
     movie = Movie.objects.search(message.text)
     if movie:
-        movie = movie.sort(key=lambda mov: mov.votes, reverse=True)[0]
+        print(len(movie))
+        movie = movie[0]
         setattr(movie, 'career', {})
         try:
             movie.get_content('main_page')
