@@ -115,11 +115,8 @@ def find_movie_in_ru(message: types.Message, user_id: str):
         except IndexError:
             pass
         bot.send_message(user_id, movie.title + '\n' + movie.plot)
-        try:
-            photo = 'https://st.kp.yandex.net/images/film_big/' + str(movie.id) + '.jpg'
-            bot.send_photo(user_id, photo)
-        except ValueError:
-            pass
+        photo = 'https://st.kp.yandex.net/images/film_big/' + str(movie.id) + '.jpg'
+        bot.send_photo(user_id, photo)
         # loop = asyncio.new_event_loop()
         links = find_watch_online_ru(movie.title, movie.year)
         refs = ''
@@ -163,6 +160,7 @@ def find_watch_online_ru(title: str, year: str):
         'https://tv.filmshd.fun/',
         'https://okko.tv',
         'https://onlinemultfilmy.ru/',
+        'http://serialogo.ucoz.net/'
         'https://www.tvzavr.ru',
         'https://megogo.ru/'
     ]
@@ -197,7 +195,7 @@ async def find_watch_online_film(urls, title: str, year: str, text):
             }
             async with session.get(google, params=params, headers=header) as resp:
                 search_rsp = await resp.text()
-                soup = BeautifulSoup(search_rsp, 'lxml')
+                soup = BeautifulSoup(search_rsp, 'html')
                 for link in soup.find_all('a'):
                     if link.get('href')[7:] and link.get('href')[7:].startswith(trunc_url):
                         movies_links.append(link.get('href')[7:].split('&')[0])
