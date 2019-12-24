@@ -140,7 +140,9 @@ async def find_movie_in_en(message: types.Message, user_id: str):
             movies.append(movie)
     if movies:
         movies.sort(key=lambda mov: sum(mov.get('number of votes').values()), reverse=True)
-        bot.send_message(user_id, str(movies[0]['title']) + '\n' + movies[0]['plot'][0])
+        title = '*' + str(movies[0]['title']) + '*'
+        plot = movies[0]['plot'][0].split('::')[0]
+        bot.send_message(user_id,  title + '\n' + plot, parse_mode='markdown')
         try:
             bot.send_photo(user_id, movies[0]['full-size cover url'])
         except telebot.apihelper.ApiException:
