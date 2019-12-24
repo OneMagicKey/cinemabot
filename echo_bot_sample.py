@@ -12,17 +12,17 @@ usr_language = {}
 
 
 @bot.message_handler(commands=['start'])
-def start_command(message: types.Message):
+async def start_command(message: types.Message):
     user_id = message.from_user.id
     users.append(user_id)
     usr_language[user_id] = 'en'
-    bot.send_message(user_id, 'Welcome to the cinema bot!')
+    await bot.send_message(user_id, 'Welcome to the cinema bot!')
     if usr_language[user_id] == 'ru':
         text = (
             'Выберите язык \n\n'
             'Поиск фильмов осуществляется на выбранном языке'
         )
-        bot.send_message(user_id, text, parse_mode='markdown', reply_markup=types.InlineKeyboardMarkup().
+        await bot.send_message(user_id, text, parse_mode='markdown', reply_markup=types.InlineKeyboardMarkup().
                          row(types.InlineKeyboardButton('Русский', callback_data='language_ru'),
                              types.InlineKeyboardButton('English', callback_data='language_en')))
     else:
@@ -30,7 +30,7 @@ def start_command(message: types.Message):
             'Select your language \n\n'
             'Films will be searched in chosen language'
         )
-        bot.send_message(user_id, text, parse_mode='markdown', reply_markup=types.InlineKeyboardMarkup().
+        await bot.send_message(user_id, text, parse_mode='markdown', reply_markup=types.InlineKeyboardMarkup().
                          row(types.InlineKeyboardButton('Русский', callback_data='language_ru'),
                              types.InlineKeyboardButton('English', callback_data='language_en')))
 
@@ -117,7 +117,6 @@ def find_movie_in_ru(message: types.Message, user_id: str):
         bot.send_message(user_id, movie.title + '\n' + movie.plot)
         photo = 'https://st.kp.yandex.net/images/film_big/' + str(movie.id) + '.jpg'
         bot.send_photo(user_id, photo)
-        # loop = asyncio.new_event_loop()
         links = find_watch_online_ru(movie.title, movie.year)
         refs = ''
         for link in links:
@@ -143,7 +142,6 @@ def find_movie_in_en(message: types.Message, user_id: str):
             bot.send_photo(user_id, movies[0]['full-size cover url'])
         except telebot.apihelper.ApiException:
             pass
-        # loop = asyncio.new_event_loop()
         links = find_watch_online_en(movies[0]['title'], movies[0]['year'])
         refs = ''
         for link in links:
@@ -155,6 +153,7 @@ def find_movie_in_en(message: types.Message, user_id: str):
 
 def find_watch_online_ru(title: str, year: str):
     urls = [
+        'https://www.film.ru/'
         'https://www.ivi.ru',
         'http://kinodron.net/',
         'https://tv.filmshd.fun/',
@@ -195,7 +194,7 @@ async def find_watch_online_film(urls, title: str, year: str, text):
             }
             async with session.get(google, params=params, headers=header) as resp:
                 search_rsp = await resp.text()
-                soup = BeautifulSoup(search_rsp, 'html')
+                soup = BeautifulSoup(search_rsp, 'lxml')
                 for link in soup.find_all('a'):
                     if link.get('href')[7:] and link.get('href')[7:].startswith(trunc_url):
                         movies_links.append(link.get('href')[7:].split('&')[0])
