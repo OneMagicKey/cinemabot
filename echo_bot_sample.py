@@ -12,17 +12,17 @@ usr_language = {}
 
 
 @bot.message_handler(commands=['start'])
-async def start_command(message: types.Message):
+def start_command(message: types.Message):
     user_id = message.from_user.id
     users.append(user_id)
     usr_language[user_id] = 'en'
-    await bot.send_message(user_id, 'Welcome to the cinema bot!')
+    bot.send_message(user_id, 'Welcome to the cinema bot!')
     if usr_language[user_id] == 'ru':
         text = (
             'Выберите язык \n\n'
             'Поиск фильмов осуществляется на выбранном языке'
         )
-        await bot.send_message(user_id, text, parse_mode='markdown', reply_markup=types.InlineKeyboardMarkup().
+        bot.send_message(user_id, text, parse_mode='markdown', reply_markup=types.InlineKeyboardMarkup().
                          row(types.InlineKeyboardButton('Русский', callback_data='language_ru'),
                              types.InlineKeyboardButton('English', callback_data='language_en')))
     else:
@@ -30,7 +30,7 @@ async def start_command(message: types.Message):
             'Select your language \n\n'
             'Films will be searched in chosen language'
         )
-        await bot.send_message(user_id, text, parse_mode='markdown', reply_markup=types.InlineKeyboardMarkup().
+        bot.send_message(user_id, text, parse_mode='markdown', reply_markup=types.InlineKeyboardMarkup().
                          row(types.InlineKeyboardButton('Русский', callback_data='language_ru'),
                              types.InlineKeyboardButton('English', callback_data='language_en')))
 
@@ -104,7 +104,7 @@ def find_movie(message: types.Message):
             find_movie_in_en(message, user_id)
 
 
-def find_movie_in_ru(message: types.Message, user_id: str):
+async def find_movie_in_ru(message: types.Message, user_id: str):
     from kinopoisk.movie import Movie
     movie = Movie.objects.search(message.text)
     if movie:
@@ -174,7 +174,7 @@ def find_watch_online_en(title: str, year: str):
         'https://itunes.apple.com/'
     ]
     text = 'watch online'
-    return asyncio.new_event_loop().run_until_complete(find_watch_online_film(urls, title, year, text))
+    return asyncio.run(find_watch_online_film(urls, title, year, text))
 
 
 async def find_watch_online_film(urls, title: str, year: str, text):
