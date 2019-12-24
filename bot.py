@@ -113,9 +113,8 @@ async def find_movie_in_ru(message: types.Message, user_id: str):
             mov.append(movie)
     print(mov)
     if mov:
-        movie = mov.sort(key=lambda m: m.votes, reverse=True)
-        print(movie)
-        movie = movie[0]
+        mov.sort(key=lambda m: m.votes, reverse=True)
+        movie = mov[0]
         setattr(movie, 'career', {})
         try:
             movie.get_content('main_page')
