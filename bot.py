@@ -13,6 +13,10 @@ usr_language = {}
 
 @bot.message_handler(commands=['start'])
 def start_command(message: types.Message):
+    """ Function to handle the start command and request bot language
+
+    :param message: message with user_id
+    """
     user_id = message.from_user.id
     users.append(user_id)
     usr_language[user_id] = 'en'
@@ -37,6 +41,10 @@ def start_command(message: types.Message):
 
 @bot.message_handler(commands=['help'])
 def help_command(message: types.Message):
+    """ Function to handle the help command. Prints a list of available bot commands.
+
+    :param message: message with user_id
+    """
     user_id = message.from_user.id
     if usr_language.get(user_id, 'en') == 'en':
         text = (
@@ -64,6 +72,10 @@ def help_command(message: types.Message):
 
 @bot.message_handler(commands=['settings'])
 def help_command(message: types.Message):
+    """ Function to handle the settings command and changing the bot language
+
+    :param message: message with user_id
+    """
     user_id = message.from_user.id
     if user_id not in users:
         text = (
@@ -91,6 +103,10 @@ def help_command(message: types.Message):
 
 @bot.message_handler(func=lambda m: True)
 def find_movie(message: types.Message):
+    """ Finding movies based on user language
+
+    :param message: message with user_id and movie title
+    """
     user_id = message.from_user.id
     if user_id not in users:
         text = (
@@ -105,6 +121,11 @@ def find_movie(message: types.Message):
 
 
 async def find_movie_in_ru(message: types.Message, user_id: str):
+    """ Finding movies on russian language and send movie poster and title to user
+
+    :param message: message movie title
+    :param user_id: user_id for send message to
+    """
     from kinopoisk.movie import Movie
     movies = Movie.objects.search(message.text)
     mov = []
@@ -130,6 +151,11 @@ async def find_movie_in_ru(message: types.Message, user_id: str):
 
 
 async def find_movie_in_en(message: types.Message, user_id: str):
+    """ Finding movies on english language and send movie poster and title to user
+
+    :param message: message movie title
+    :param user_id: user_id for send message to
+    """
     from imdb import IMDb
     ia = IMDb()
     found_movies = ia.search_movie(title=message.text, results=3)
@@ -181,31 +207,37 @@ async def find_watch_online_en(title: str, year: str):
 
 
 async def find_watch_online_film(urls, title: str, year: str, text):
+    """ Finding links to watch film online
+
+    :param urls: list of sites for finding movies
+    :param title: title of the movie
+    :param year: year of the movie release
+    """
     start_urls = ['.'.join(url.split('.')[:-1]) for url in urls]
-    google = 'https://www.google.com/search?'
     header = {
         'user-agent': (
             'Mozilla/5.0 (X11; U; Linux i686; ru; rv:1.9.1.8) Gecko/20100214 Linux Mint/8 (Helena) Firefox/'
             '3.5.8'
         )
     }
-    movies_links = []
+    movies_refs = []
     async with aiohttp.ClientSession() as session:
         for url, start_url in zip(urls, start_urls):
             param = {
                 'q': 'site:' + url + ' ' + title + ' ' + str(year) + ' ' + text,
             }
-            async with session.get(google, params=param, headers=header) as resp:
+            async with session.get('https://www.google.com/search?', params=param, headers=header) as resp:
                 soup = BeautifulSoup(await resp.text(), 'lxml')
                 for link in soup.find_all('a'):
                     if link.get('href')[7:] and link.get('href')[7:].startswith(start_url):
-                        movies_links.append(link.get('href')[7:].split('&')[0])
+                        movies_refs.append(link.get('href')[7:].split('&')[0])
                         break
-    return movies_links
+    return movies_refs
 
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_inline(call: types.CallbackQuery):
+    """ Callback function to handle with buttons"""
     data = call.data.split('_')
     user_id = call.from_user.id
     if data[1] == 'ru':
