@@ -28,7 +28,7 @@ def start_command(message: types.Message):
     else:
         text = (
             'Select your language \n\n'
-            'Films will be searched in chosen language'
+            'Films will be searched in selected language'
         )
         bot.send_message(user_id, text, parse_mode='markdown', reply_markup=types.InlineKeyboardMarkup().
                          row(types.InlineKeyboardButton('Русский', callback_data='language_ru'),
@@ -114,16 +114,16 @@ async def find_movie_in_ru(message: types.Message, user_id: str):
             movie.get_content('main_page')
         except IndexError:
             pass
-        await bot.send_message(user_id, movie.title + '\n' + movie.plot)
+        bot.send_message(user_id, movie.title + '\n' + movie.plot)
         photo = 'https://st.kp.yandex.net/images/film_big/' + str(movie.id) + '.jpg'
-        await bot.send_photo(user_id, photo)
+        bot.send_photo(user_id, photo)
         links = asyncio.run(find_watch_online_ru(movie.title, movie.year))
         refs = ''
         for link in links:
             refs += link + '\n'
-        await bot.send_message(user_id, refs)
+        bot.send_message(user_id, refs)
     else:
-        await bot.send_message(user_id, "Не могу найти " + message.text)
+        bot.send_message(user_id, "Не могу найти " + message.text)
 
 
 async def find_movie_in_en(message: types.Message, user_id: str):
@@ -137,18 +137,18 @@ async def find_movie_in_en(message: types.Message, user_id: str):
             movies.append(movie)
     if movies:
         movies.sort(key=lambda mov: sum(mov.get('number of votes').values()), reverse=True)
-        await bot.send_message(user_id, str(movies[0]['title']) + '\n' + movies[0]['plot'][0])
+        bot.send_message(user_id, str(movies[0]['title']) + '\n' + movies[0]['plot'][0])
         try:
-            await bot.send_photo(user_id, movies[0]['full-size cover url'])
+            bot.send_photo(user_id, movies[0]['full-size cover url'])
         except telebot.apihelper.ApiException:
             pass
         links = asyncio.run(find_watch_online_en(movies[0]['title'], movies[0]['year']))
         refs = ''
         for link in links:
             refs += link + '\n'
-        await bot.send_message(user_id, refs)
+        bot.send_message(user_id, refs)
     else:
-        await bot.send_message(user_id, "Can't find " + message.text)
+        bot.send_message(user_id, "Can't find " + message.text)
 
 
 async def find_watch_online_ru(title: str, year: str):
