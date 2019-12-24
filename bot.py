@@ -117,7 +117,7 @@ async def find_movie_in_ru(message: types.Message, user_id: str):
         bot.send_message(user_id, movie.title + '\n' + movie.plot)
         photo = 'https://st.kp.yandex.net/images/film_big/' + str(movie.id) + '.jpg'
         bot.send_photo(user_id, photo)
-        links = asyncio.get_running_loop().run_until_complete(find_watch_online_ru(movie.title, movie.year))
+        links = asyncio.get_event_loop().run_until_complete(find_watch_online_ru(movie.title, movie.year))
         refs = ''
         for link in links:
             refs += link + '\n'
@@ -142,7 +142,7 @@ async def find_movie_in_en(message: types.Message, user_id: str):
             bot.send_photo(user_id, movies[0]['full-size cover url'])
         except telebot.apihelper.ApiException:
             pass
-        links = asyncio.get_running_loop().run_until_complete(find_watch_online_en(movies[0]['title'], movies[0]['year']))
+        links = asyncio.get_event_loop().run_until_complete(find_watch_online_en(movies[0]['title'], movies[0]['year']))
         refs = ''
         for link in links:
             refs += link + '\n'
