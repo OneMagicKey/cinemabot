@@ -183,16 +183,16 @@ async def find_watch_online_film(urls, title: str, year: str, text):
     header = {
         'user-agent': (
             'Mozilla/5.0 (X11; U; Linux i686; ru; rv:1.9.1.8) Gecko/20100214 Linux Mint/8 (Helena) Firefox/'
-                      '3.5.8'
+            '3.5.8'
         )
     }
     movies_links = []
     async with aiohttp.ClientSession() as session:
         for url, start_url in zip(urls, start_urls):
-            params = {
+            param = {
                 'q': 'site:' + url + ' ' + title + ' ' + str(year) + ' ' + text,
             }
-            async with session.get(google, params=params) as resp:
+            async with session.get(google, params=param, headers=header) as resp:
                 soup = BeautifulSoup(await resp.text(), 'lxml')
                 for link in soup.find_all('a'):
                     if link.get('href')[7:] and link.get('href')[7:].startswith(start_url):
