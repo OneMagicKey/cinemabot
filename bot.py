@@ -114,9 +114,9 @@ async def find_movie_in_ru(message: types.Message, user_id: str):
             movie.get_content('main_page')
         except IndexError:
             pass
-        bot.send_message(user_id, movie.title + '\n' + movie.plot)
+        await bot.send_message(user_id, movie.title + '\n' + movie.plot)
         photo = 'https://st.kp.yandex.net/images/film_big/' + str(movie.id) + '.jpg'
-        bot.send_photo(user_id, photo)
+        await bot.send_photo(user_id, photo)
         links = await find_watch_online_ru(movie.title, movie.year)
         refs = ''
         for link in links:
@@ -142,7 +142,7 @@ async def find_movie_in_en(message: types.Message, user_id: str):
             bot.send_photo(user_id, movies[0]['full-size cover url'])
         except telebot.apihelper.ApiException:
             pass
-        links = asyncio.get_running_loop().run_until_complete(find_watch_online_en(movies[0]['title'], movies[0]['year']))
+        links = await find_watch_online_en(movies[0]['title'], movies[0]['year'])
         refs = ''
         for link in links:
             refs += link + '\n'
@@ -174,7 +174,7 @@ async def find_watch_online_en(title: str, year: str):
         'https://itunes.apple.com/'
     ]
     text = 'watch online'
-    return asyncio.get_running_loop().run_until_complete(find_watch_online_film(urls, title, year, text))
+    return await find_watch_online_film(urls, title, year, text)
 
 
 async def find_watch_online_film(urls, title: str, year: str, text):
