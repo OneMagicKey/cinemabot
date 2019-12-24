@@ -108,16 +108,17 @@ async def find_movie_in_ru(message: types.Message, user_id: str):
     from kinopoisk.movie import Movie
     movies = Movie.objects.search(message.text)
     mov = []
-    for movie in movies:
+    for movie in movies[:5]:
+        try:
+            movie.get_content('main_page')
+        except IndexError:
+            pass
         if movie.rating is not None:
             mov.append(movie)
     if mov:
         movie = mov.sort(key=lambda m: m.rating, reverse=True)[0]
         setattr(movie, 'career', {})
-        try:
-            movie.get_content('main_page')
-        except IndexError:
-            pass
+
         bot.send_message(user_id, movie.title + '\n' + movie.plot)
         photo = 'https://st.kp.yandex.net/images/film_big/' + str(movie.id) + '.jpg'
         bot.send_photo(user_id, photo)
@@ -177,7 +178,7 @@ async def find_watch_online_en(title: str, year: str):
         'https://www.netflix.com',
         'https://itunes.apple.com',
     ]
-    text = 'watch online'
+    text = 'watch'
     return await find_watch_online_film(urls, title, year, text)
 
 
