@@ -6,7 +6,7 @@ import config
 from telebot import types
 import telebot
 
-bot = telebot.TeleBot(config.token)
+bot = telebot.AsyncTeleBot(config.token)
 users = []
 usr_language = {}
 
