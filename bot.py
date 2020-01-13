@@ -246,4 +246,4 @@ def callback_inline(call: types.CallbackQuery):
 
 
 if __name__ == '__main__':
-    bot.polling(none_stop=True, timeout=10)
+    bot.polling(none_stop=True, timeout=300)
