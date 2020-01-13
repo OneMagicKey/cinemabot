@@ -192,7 +192,6 @@ async def find_watch_online_ru(title: str, year: str):
         'https://megogo.ru',
     ]
     text = 'смотреть'
-    print('blablablah')
     return await find_watch_online_film(urls, title, year, text)
 
 
@@ -220,14 +219,15 @@ async def find_watch_online_film(urls, title: str, year: str, text):
             '3.5.8'
         )
     }
-    print('hahahah')
     movies_refs = []
     async with aiohttp.ClientSession() as session:
         for url, start_url in zip(urls, start_urls):
             param = {
                 'q': 'site:' + url + ' ' + title + ' ' + str(year) + ' ' + text,
             }
+            print('hahahah')
             async with session.get('https://www.google.com/search?', params=param, headers=header) as resp:
+                print('heheheh')
                 soup = BeautifulSoup(await resp.text(), 'lxml')
                 for link in soup.find_all('a'):
                     if link.get('href')[7:] and link.get('href')[7:].startswith(start_url):
