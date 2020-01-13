@@ -133,7 +133,6 @@ async def find_movie_in_ru(message: types.Message, user_id: str):
             mov.append(movie)
     if mov:
         # mov.sort(key=lambda m: m.votes, reverse=True)
-	
         movie = mov[0]
         setattr(movie, 'career', {})
         try:
@@ -247,4 +246,4 @@ def callback_inline(call: types.CallbackQuery):
 
 
 if __name__ == '__main__':
-    bot.polling(none_stop=True, timeout=300)
+    bot.polling(none_stop=True, timeout=10)
