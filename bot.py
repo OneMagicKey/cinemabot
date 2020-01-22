@@ -225,8 +225,8 @@ async def find_watch_online_film(urls: list, title: str, year: str, text: str):
     async with aiohttp.ClientSession() as session:
         for url, start_url in zip(urls, start_urls):
             param = {
-                # f'q: site:{url} {title} {year} {text}'
-                'q': 'site:' + url + ' ' + title + ' ' + str(year) + ' ' + text,
+                # f'site:{url} {title} {year} {text}'
+                'q': f'site:{url} {title} {year} {text}',
             }
             async with session.get('https://www.google.com/search?', params=param, headers=header) as resp:
                 soup = BeautifulSoup(await resp.text(), 'lxml')
