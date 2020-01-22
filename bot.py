@@ -139,12 +139,12 @@ async def find_movie_in_ru(message: types.Message, user_id: str):
             movie.get_content('main_page')
         except IndexError:
             pass
-        # f'*{movie.title}*\n{movie.plot}'
-        bot.send_message(user_id, '*' + movie.title + '*' + '\n' + movie.plot, parse_mode='markdown')
+        nl = '\n'
+        bot.send_message(user_id, f'*{movie.title}*{nl}{movie.plot}', parse_mode='markdown')
         photo = f'https://st.kp.yandex.net/images/film_big/{movie.id}.jpg'
         bot.send_photo(user_id, photo)
         links = await find_watch_online_ru(movie.title, movie.year)
-        refs = f"Ссылки: \n {' '.join(links)}"
+        refs = f"Ссылки: {nl}{nl.join(links)}"
         bot.send_message(user_id, refs)
     else:
         bot.send_message(user_id, "Не могу найти " + message.text)
