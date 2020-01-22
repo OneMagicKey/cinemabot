@@ -147,7 +147,7 @@ async def find_movie_in_ru(message: types.Message, user_id: str):
         refs = f"Ссылки: {nl}{nl.join(links)}"
         bot.send_message(user_id, refs)
     else:
-        bot.send_message(user_id, "Не могу найти " + message.text)
+        bot.send_message(user_id, f'Не могу найти {message.text}')
 
 
 async def find_movie_in_en(message: types.Message, user_id: str):
@@ -165,18 +165,20 @@ async def find_movie_in_en(message: types.Message, user_id: str):
             movies.append(movie)
     if movies:
         movies.sort(key=lambda mov: sum(mov.get('number of votes').values()), reverse=True)
-        title = '*' + str(movies[0]['title']) + '*'
+
+        title = f"*{movies[0]['title']}*"
         plot = movies[0]['plot'][0].split('::')[0]
-        bot.send_message(user_id,  title + '\n' + plot, parse_mode='markdown')
+        nl = '\n'
+        bot.send_message(user_id,  f'{title}{nl}{plot}', parse_mode='markdown')
         try:
             bot.send_photo(user_id, movies[0]['full-size cover url'])
         except telebot.apihelper.ApiException:
             pass
         links = await find_watch_online_en(movies[0]['title'], movies[0]['year'])
-        refs = 'Links: ' + '\n'.join(links)
+        refs = f"Links: {nl}{nl.join(links)}"
         bot.send_message(user_id, refs)
     else:
-        bot.send_message(user_id, "Can't find " + message.text)
+        bot.send_message(user_id, f"Can't find {message.text}")
 
 
 async def find_watch_online_ru(title: str, year: str):
@@ -223,8 +225,8 @@ async def find_watch_online_film(urls: list, title: str, year: str, text: str):
     async with aiohttp.ClientSession() as session:
         for url, start_url in zip(urls, start_urls):
             param = {
-                # f'q: site:{url}'
-                'q': 'site:' + url + ' ' + title + ' ' + str(year) + ' ' + text,
+                f'q: site:{url} {title} {year} {text}'
+                # 'q': 'site:' + url + ' ' + title + ' ' + str(year) + ' ' + text,
             }
             async with session.get('https://www.google.com/search?', params=param, headers=header) as resp:
                 soup = BeautifulSoup(await resp.text(), 'lxml')
@@ -245,7 +247,7 @@ def callback_inline(call: types.CallbackQuery):
         bot.send_message(user_id, "Язык сохранён!")
     else:
         usr_language[user_id] = 'en'
-        bot.send_message(user_id, "Language has changed!")
+        bot.send_message(user_id, "Language has been saved!")
 
 
 if __name__ == '__main__':
