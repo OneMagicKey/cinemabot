@@ -140,14 +140,14 @@ async def find_movie_in_ru(message: types.Message, user_id: str):
         except IndexError:
             pass
         nl = '\n'
-        await bot.send_message(user_id, f'*{movie.title}*{nl}{movie.plot}', parse_mode='markdown')
+        bot.send_message(user_id, f'*{movie.title}*{nl}{movie.plot}', parse_mode='markdown')
         photo = f'https://st.kp.yandex.net/images/film_big/{movie.id}.jpg'
-        await bot.send_photo(user_id, photo)
+        bot.send_photo(user_id, photo)
         links = await find_watch_online_ru(movie.title, movie.year)
         refs = f"Ссылки: {nl}{nl.join(links)}"
-        await bot.send_message(user_id, refs)
+        bot.send_message(user_id, refs)
     else:
-        await bot.send_message(user_id, f'Не могу найти {message.text}')
+        bot.send_message(user_id, f'Не могу найти {message.text}')
 
 
 async def find_movie_in_en(message: types.Message, user_id: str):
