@@ -2,6 +2,8 @@ import asyncio
 import aiohttp
 from bs4 import BeautifulSoup
 import config
+from imdb import IMDb
+from kinopoisk.movie import Movie
 from telebot import types
 import telebot
 
@@ -70,7 +72,7 @@ def help_command(message: types.Message):
 
 
 @bot.message_handler(commands=['settings'])
-def help_command(message: types.Message):
+def setting_command(message: types.Message):
     """ Function to handle the settings command and changing the bot language
 
     :param message: message with user_id
@@ -125,25 +127,24 @@ async def find_movie_in_ru(message: types.Message, user_id: str):
     :param message: message movie title
     :param user_id: user_id for send message to
     """
-    from kinopoisk.movie import Movie
     movies = Movie.objects.search(message.text)
     mov = []
     for movie in movies[:3]:
         if movie.votes is not None:
             mov.append(movie)
     if mov:
-        # mov.sort(key=lambda m: m.votes, reverse=True)
         movie = mov[0]
         setattr(movie, 'career', {})
         try:
             movie.get_content('main_page')
         except IndexError:
             pass
+        # f'*{movie.title}*\n{movie.plot}'
         bot.send_message(user_id, '*' + movie.title + '*' + '\n' + movie.plot, parse_mode='markdown')
-        photo = 'https://st.kp.yandex.net/images/film_big/' + str(movie.id) + '.jpg'
+        photo = f'https://st.kp.yandex.net/images/film_big/{movie.id}.jpg'
         bot.send_photo(user_id, photo)
         links = await find_watch_online_ru(movie.title, movie.year)
-        refs = 'Ссылки: ' + '\n'.join(links)
+        refs = f"Ссылки: \n {' '.join(links)}"
         bot.send_message(user_id, refs)
     else:
         bot.send_message(user_id, "Не могу найти " + message.text)
@@ -155,7 +156,6 @@ async def find_movie_in_en(message: types.Message, user_id: str):
     :param message: message movie title
     :param user_id: user_id for send message to
     """
-    from imdb import IMDb
     ia = IMDb()
     found_movies = ia.search_movie(title=message.text, results=3)
     movies = []
@@ -205,7 +205,7 @@ async def find_watch_online_en(title: str, year: str):
     return await find_watch_online_film(urls, title, year, text)
 
 
-async def find_watch_online_film(urls, title: str, year: str, text):
+async def find_watch_online_film(urls: list, title: str, year: str, text: str):
     """ Finding links to watch film online
 
     :param urls: list of sites for finding movies
@@ -223,6 +223,7 @@ async def find_watch_online_film(urls, title: str, year: str, text):
     async with aiohttp.ClientSession() as session:
         for url, start_url in zip(urls, start_urls):
             param = {
+                # f'q: site:{url}'
                 'q': 'site:' + url + ' ' + title + ' ' + str(year) + ' ' + text,
             }
             async with session.get('https://www.google.com/search?', params=param, headers=header) as resp:
@@ -236,13 +237,15 @@ async def find_watch_online_film(urls, title: str, year: str, text):
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_inline(call: types.CallbackQuery):
-    """ Callback function to handle with buttons"""
+    """ Callback function to handle the buttons"""
     data = call.data.split('_')
     user_id = call.from_user.id
     if data[1] == 'ru':
         usr_language[user_id] = 'ru'
+        bot.send_message(user_id, "Язык сохранён!")
     else:
         usr_language[user_id] = 'en'
+        bot.send_message(user_id, "Language has changed!")
 
 
 if __name__ == '__main__':
