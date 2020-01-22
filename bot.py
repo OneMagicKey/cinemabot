@@ -140,14 +140,14 @@ async def find_movie_in_ru(message: types.Message, user_id: str):
         except IndexError:
             pass
         nl = '\n'
-        bot.send_message(user_id, f'*{movie.title}*{nl}{movie.plot}', parse_mode='markdown')
+        await bot.send_message(user_id, f'*{movie.title}*{nl}{movie.plot}', parse_mode='markdown')
         photo = f'https://st.kp.yandex.net/images/film_big/{movie.id}.jpg'
-        bot.send_photo(user_id, photo)
+        await bot.send_photo(user_id, photo)
         links = await find_watch_online_ru(movie.title, movie.year)
         refs = f"Ссылки: {nl}{nl.join(links)}"
-        bot.send_message(user_id, refs)
+        await bot.send_message(user_id, refs)
     else:
-        bot.send_message(user_id, f'Не могу найти {message.text}')
+        await bot.send_message(user_id, f'Не могу найти {message.text}')
 
 
 async def find_movie_in_en(message: types.Message, user_id: str):
@@ -182,6 +182,11 @@ async def find_movie_in_en(message: types.Message, user_id: str):
 
 
 async def find_watch_online_ru(title: str, year: str):
+    """ Create list of sites for finding movies
+
+        :param title: title of the movie
+        :param year: year of the movie release
+        """
     urls = [
         'https://www.film.ru',
         'https://www.ivi.ru',
@@ -198,6 +203,11 @@ async def find_watch_online_ru(title: str, year: str):
 
 
 async def find_watch_online_en(title: str, year: str):
+    """ Create list of sites for finding movies
+
+    :param title: title of the movie
+    :param year: year of the movie release
+    """
     urls = [
         'https://www.amazon.com',
         'https://www.netflix.com',
@@ -225,7 +235,6 @@ async def find_watch_online_film(urls: list, title: str, year: str, text: str):
     async with aiohttp.ClientSession() as session:
         for url, start_url in zip(urls, start_urls):
             param = {
-                # f'site:{url} {title} {year} {text}'
                 'q': f'site:{url} {title} {year} {text}',
             }
             async with session.get('https://www.google.com/search?', params=param, headers=header) as resp:
