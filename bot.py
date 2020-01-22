@@ -7,7 +7,7 @@ from kinopoisk.movie import Movie
 from telebot import types
 import telebot
 
-bot = telebot.AsyncTeleBot(config.token)
+bot = telebot.TeleBot(config.token)
 users = []
 usr_language = {}
 
