@@ -64,4 +64,3 @@ def test_search_en_links():
     for title, year in info:
         links = bot.find_watch_online_en(title, str(year))
         assert links
-
